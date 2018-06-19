@@ -135,16 +135,17 @@ export class Git {
 
   public async getPullRequestTitle(sha: string, uri: vscode.Uri): Promise<string|undefined> {
     const customTitle = getConfiguration('github', uri).customPullRequestTitle;
+    const commitMessage = await this.getCommitMessage(sha, uri);
 
     if (customTitle) {
-        return this.getSingleLinePullRequestTitle();
+        return this.getSingleLinePullRequestTitle(commitMessage);
     }
 
-    return this.getCommitMessage(sha, uri);
+    return commitMessage;
   }
 
-  private async getSingleLinePullRequestTitle(): Promise<string|undefined> {
-    return vscode.window.showInputBox({prompt: 'Pull request title'});
+  private async getSingleLinePullRequestTitle(defaultMessage: string): Promise<string|undefined> {
+    return vscode.window.showInputBox({prompt: 'Pull request title', value: defaultMessage});
   }
 
   public async getPullRequestBody(sha: string, uri: vscode.Uri): Promise<string|undefined> {
